@@ -41,6 +41,8 @@ float brightnessWhiteLED = 0; // яркость белой ленты
 
 color colorIn; // цвет цветной ленты
 
+boolean isStartedLight = false;
+
 ///////////////////////////////////////////////настройка//////////////////////////////////////////////
 void setup() {
   
@@ -84,7 +86,11 @@ void draw() {
   rgbAndWhiteLightBubbleDraw(700, 300, true, yellowBubble); // рисуем пузырь с цветной подсветкой
   rgbAndWhiteLightBubbleDraw(730, 100, false, blueBubble); // рисуем пузырь с белой подсветкой
  
-  
+  if (!isStartedLight) {
+    
+    startingLight();
+    
+  }
   
   port.write("R" + redLED + "G" + greenLED + "B" + blueLED + "W" + brightnessWhiteLED*255 + ";"); // зажигаем нужные цвета на подсветках
   
@@ -617,6 +623,20 @@ void feelBubbleStroke(color colorInput) {
 ////////////////////////////////////////////запуск цветной ленты////////////////////////////////////// 
 void startingLight() { 
   
+  isStartedLight = true;
   
+  colorIn = color(int(random(0, 255)), int(random(0, 255)), int(random(0, 255)));
+  
+  for (int i = 0; i <= map(brightnessRGB, 0, 1, 0, 255); ++i) {
+    
+    redLED = int(((colorIn >> 16) & 0xFF) * map(i, 0, 255, 0, 1));  
+    greenLED = int(((colorIn >> 8) & 0xFF) * map(i, 0, 255, 0, 1));   
+    blueLED = int((colorIn & 0xFF) * map(i, 0, 255, 0, 1));    
+     
+    port.write("R" + redLED + "G" + greenLED + "B" + blueLED + "W" + brightnessWhiteLED*255 + ";"); // зажигаем нужные цвета на подсветках 
+     
+    someDelay(5); 
+  
+  }
   
 }

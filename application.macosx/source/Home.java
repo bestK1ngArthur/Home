@@ -59,6 +59,8 @@ float brightnessWhiteLED = 0; // \u044f\u0440\u043a\u043e\u0441\u0442\u044c \u04
 
 int colorIn; // \u0446\u0432\u0435\u0442 \u0446\u0432\u0435\u0442\u043d\u043e\u0439 \u043b\u0435\u043d\u0442\u044b
 
+boolean isStartedLight = false;
+
 ///////////////////////////////////////////////\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430//////////////////////////////////////////////
 public void setup() {
   
@@ -102,7 +104,11 @@ public void draw() {
   rgbAndWhiteLightBubbleDraw(700, 300, true, yellowBubble); // \u0440\u0438\u0441\u0443\u0435\u043c \u043f\u0443\u0437\u044b\u0440\u044c \u0441 \u0446\u0432\u0435\u0442\u043d\u043e\u0439 \u043f\u043e\u0434\u0441\u0432\u0435\u0442\u043a\u043e\u0439
   rgbAndWhiteLightBubbleDraw(730, 100, false, blueBubble); // \u0440\u0438\u0441\u0443\u0435\u043c \u043f\u0443\u0437\u044b\u0440\u044c \u0441 \u0431\u0435\u043b\u043e\u0439 \u043f\u043e\u0434\u0441\u0432\u0435\u0442\u043a\u043e\u0439
  
-  
+  if (!isStartedLight) {
+    
+    startingLight();
+    
+  }
   
   port.write("R" + redLED + "G" + greenLED + "B" + blueLED + "W" + brightnessWhiteLED*255 + ";"); // \u0437\u0430\u0436\u0438\u0433\u0430\u0435\u043c \u043d\u0443\u0436\u043d\u044b\u0435 \u0446\u0432\u0435\u0442\u0430 \u043d\u0430 \u043f\u043e\u0434\u0441\u0432\u0435\u0442\u043a\u0430\u0445
   
@@ -635,7 +641,21 @@ public void feelBubbleStroke(int colorInput) {
 ////////////////////////////////////////////\u0437\u0430\u043f\u0443\u0441\u043a \u0446\u0432\u0435\u0442\u043d\u043e\u0439 \u043b\u0435\u043d\u0442\u044b////////////////////////////////////// 
 public void startingLight() { 
   
+  isStartedLight = true;
   
+  colorIn = color(PApplet.parseInt(random(0, 255)), PApplet.parseInt(random(0, 255)), PApplet.parseInt(random(0, 255)));
+  
+  for (int i = 0; i <= map(brightnessRGB, 0, 1, 0, 255); ++i) {
+    
+    redLED = PApplet.parseInt(((colorIn >> 16) & 0xFF) * map(i, 0, 255, 0, 1));  
+    greenLED = PApplet.parseInt(((colorIn >> 8) & 0xFF) * map(i, 0, 255, 0, 1));   
+    blueLED = PApplet.parseInt((colorIn & 0xFF) * map(i, 0, 255, 0, 1));    
+     
+    port.write("R" + redLED + "G" + greenLED + "B" + blueLED + "W" + brightnessWhiteLED*255 + ";"); // \u0437\u0430\u0436\u0438\u0433\u0430\u0435\u043c \u043d\u0443\u0436\u043d\u044b\u0435 \u0446\u0432\u0435\u0442\u0430 \u043d\u0430 \u043f\u043e\u0434\u0441\u0432\u0435\u0442\u043a\u0430\u0445 
+     
+    someDelay(5); 
+  
+  }
   
 }
   static public void main(String[] passedArgs) {
